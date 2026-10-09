@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 8696005340818759922}
   - component: {fileID: 6670221097083339434}
   - component: {fileID: 7108505019464254034}
-  - component: {fileID: 7040841810142566976}
+  - component: {fileID: -5286206919527095970}
   m_Layer: 0
-  m_Name: DamageZone
+  m_Name: HealingZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -83,7 +83,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 13249ead3faf799469c8786003b8d91e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f5e853af8656e25428b72c63612959c4, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -131,7 +131,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.64, y: 1.64}
+    oldSize: {x: 1.68, y: 1.35}
     newSize: {x: 1.64, y: 1.64}
     adaptiveTilingThreshold: 0.5
     drawMode: 2
@@ -139,7 +139,7 @@ BoxCollider2D:
   m_AutoTiling: 1
   m_Size: {x: 1.64, y: 1.2644421}
   m_EdgeRadius: 0
---- !u!114 &7040841810142566976
+--- !u!114 &-5286206919527095970
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -148,6 +148,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 5324871899767443073}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4362ddc30866f8f49b845a10894331d5, type: 3}
+  m_Script: {fileID: 11500000, guid: cb9f8d0f153fdcc48b579e26a2962de0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  healAmount: 1
+  healInterval: 2
