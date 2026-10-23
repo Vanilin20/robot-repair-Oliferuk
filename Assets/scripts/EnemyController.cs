@@ -28,44 +28,60 @@ public class EnemyController : MonoBehaviour
         {
             direction = -direction;
             timer = changeTime;
+
+            // Випадкова зміна осі руху (Hard Challenge)
+            if (Random.value > 0.5f)
+            {
+                vertical = !vertical;
+            }
         }
     }
 
     void FixedUpdate()
     {
-        if (!broken) return;
+        if (!broken)
+        {
+            rigidbody2d.linearVelocity = Vector2.zero; // Зменшуємо швидкість до 0, якщо полагоджений
+            return;
+        }
 
-        Vector2 position = rigidbody2d.position;
-
+        // Рух через фізичну швидкість (velocity) замість прямої зміни позиції
         if (vertical)
         {
-            position.y = position.y + speed * direction * Time.deltaTime;
+            rigidbody2d.linearVelocity = new Vector2(0, speed * direction);
             animator.SetFloat("Move X", 0);
             animator.SetFloat("Move Y", direction);
         }
         else
         {
-            position.x = position.x + speed * direction * Time.deltaTime;
+            rigidbody2d.linearVelocity = new Vector2(speed * direction, 0);
             animator.SetFloat("Move X", direction);
             animator.SetFloat("Move Y", 0);
         }
-
-        rigidbody2d.MovePosition(position);
     }
 
-    void OnTriggerEnter2D(Collider2D other)
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        PlayerController player = other.gameObject.GetComponent<PlayerController>();
+        // Перевіряємо, чи зіштовхнулися з гравцем
+        PlayerController player = collision.gameObject.GetComponent<PlayerController>();
         if (player != null)
         {
             player.ChangeHealth(-1);
+            return;
+        }
+
+        // Якщо зіштовхнулися зі стіною/декорацією (не снаряд) — розвертаємося
+        if (collision.gameObject.GetComponent<Projectile>() == null)
+        {
+            direction = -direction;
+            timer = changeTime;
         }
     }
 
     public void Fix()
     {
         broken = false;
-        rigidbody2d.simulated = false;
+        rigidbody2d.simulated = false; // Вимикаємо фізику після ремонту
         animator.SetTrigger("Fixed");
     }
 }
