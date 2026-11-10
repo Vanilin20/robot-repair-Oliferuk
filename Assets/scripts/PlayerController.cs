@@ -5,6 +5,7 @@ public class PlayerController : MonoBehaviour
 {
     public InputAction MoveAction;
     public InputAction LaunchAction;
+    public InputAction TalkAction = new InputAction("Talk", InputActionType.Button);
 
     public float speed = 3.0f;
     public int maxHealth = 5;
@@ -26,10 +27,19 @@ public class PlayerController : MonoBehaviour
     Vector2 moveDirection = new Vector2(1, 0);
     Vector2 move;
 
+    private NonPlayerCharacter lastNonPlayerCharacter;
+
     void Start()
     {
+        // Якщо в Inspector для Talk Action не задано клавішу — ставимо X
+        if (TalkAction.bindings.Count == 0)
+        {
+            TalkAction.AddBinding("<Keyboard>/x");
+        }
+
         MoveAction.Enable();
         LaunchAction.Enable();
+        TalkAction.Enable();
 
         rigidbody2d = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
@@ -66,6 +76,30 @@ public class PlayerController : MonoBehaviour
             Launch();
             shootCooldown = timeBetweenShots;
         }
+
+        RaycastHit2D hit = Physics2D.Raycast(
+            rigidbody2d.position + Vector2.up * 0.2f,
+            moveDirection, 1.5f, LayerMask.GetMask("NPC"));
+
+        if (hit.collider != null)
+        {
+            NonPlayerCharacter npc = hit.collider.GetComponent<NonPlayerCharacter>();
+            if (lastNonPlayerCharacter != null && lastNonPlayerCharacter != npc)
+            {
+                lastNonPlayerCharacter.dialogueBubble.SetActive(false);
+            }
+            npc.dialogueBubble.SetActive(true);
+            lastNonPlayerCharacter = npc;
+            FindFriend();
+        }
+        else
+        {
+            if (lastNonPlayerCharacter != null)
+            {
+                lastNonPlayerCharacter.dialogueBubble.SetActive(false);
+                lastNonPlayerCharacter = null;
+            }
+        }
     }
 
     void FixedUpdate()
@@ -85,7 +119,7 @@ public class PlayerController : MonoBehaviour
         }
 
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
-        Debug.Log(currentHealth + "/" + maxHealth);
+        UIHandler.instance.SetHealthValue(currentHealth / (float)maxHealth);
     }
 
     void Launch()
@@ -95,5 +129,13 @@ public class PlayerController : MonoBehaviour
         projectile.Launch(moveDirection, 300);
 
         animator.SetTrigger("Launch");
+    }
+
+    void FindFriend()
+    {
+        if (TalkAction.WasPressedThisFrame())
+        {
+            UIHandler.instance.DisplayDialogue(lastNonPlayerCharacter.dialogueText);
+        }
     }
 }
